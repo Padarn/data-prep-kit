@@ -148,10 +148,14 @@ class TransformUtils:
             logger.warning(f"Could not convert bytes to pyarrow: {e}")
 
         logger.info(f"Attempting read of pyarrow Table using polars")
-        import polars
+        try:
+            import polars
 
-        df = polars.read_parquet(io.BytesIO(data))
-        table = df.to_arrow()
+            df = polars.read_parquet(io.BytesIO(data))
+            table = df.to_arrow()
+        except Exception as e:
+            logger.warning(f"Could not convert bytes to pyarrow using polars: {e}. Skipping.")
+            table = None
         return table
 
     @staticmethod
